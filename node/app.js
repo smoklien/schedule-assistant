@@ -5,6 +5,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware для обробки JSON-запитів
 app.use(express.json());
 
+// Обслуговування статичних файлів з папки 'public'
+app.use(express.static('public'));
+
 // Імпорт роутера для повідомлень
 const messagerRouter = require('./routes/messager');
 app.use('/api/messager', messagerRouter);

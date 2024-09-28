@@ -6,10 +6,13 @@ router.get('/', (req, res) => {
   res.json({ message: 'Відповідь бек' });
 });
 
-// Додавання повідомлення (приклад POST-запиту)
+// Додавання повідомлення (POST-запит)
 router.post('/', (req, res) => {
-  const { text } = req.body;
-  res.json({ message: `Ви надіслали: ${text}`, reply: 'Відповідь бек' });
+    const { text } = req.body;
+    if (!text) {
+        return res.status(400).json({ error: 'Поле text є обов\'язковим.' });
+    }
+    res.json({ message: `Ви надіслали: ${text}`, reply: 'Відповідь бек' });
 });
 
 module.exports = router;
