@@ -9,8 +9,8 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Імпорт роутера для повідомлень
-const messagerRouter = require('./routes/messager');
-app.use('/api/messager', messagerRouter);
+const messengerRouter = require('./routes/messenger');
+app.use('/api/messenger', messengerRouter);
 
 // Базовий роут для перевірки роботи сервера
 app.get('/', (req, res) => {

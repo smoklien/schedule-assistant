@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function sendMessageToServer(text) {
         try {
-            const response = await fetch('/api/messager', {
+            const response = await fetch('/api/messenger', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
