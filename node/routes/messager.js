@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
-// Статичне повідомлення як відповідь
+// Static message as response
 router.get('/', (req, res) => {
-  res.json({ message: 'Відповідь бек' });
+  res.json({ message: 'Back-end response.' });
 });
 
-// Додавання повідомлення (POST-запит)
+// Adding messages (POST-request)
 router.post('/', (req, res) => {
     const { text } = req.body;
     if (!text) {
-        return res.status(400).json({ error: 'Поле text є обов\'язковим.' });
+        return res.status(400).json({ error: 'Please fill out this field' });
     }
-    res.json({ message: `Ви надіслали: ${text}`, reply: 'Відповідь бек' });
+    res.json({ message: `User message: ${text}`, reply: 'LLM response' });
 });
 
 module.exports = router;

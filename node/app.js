@@ -14,10 +14,10 @@ app.use('/api/messager', messagerRouter);
 
 // Базовий роут для перевірки роботи сервера
 app.get('/', (req, res) => {
-  res.send('Сервер працює!');
+  res.send('Server is working.');
 });
 
 // Запуск сервера
 app.listen(PORT, () => {
-  console.log(`Сервер запущено на http://localhost:${PORT}`);
+  console.log(`Server is working on: http://localhost:${PORT}`);
 });

@@ -6,16 +6,26 @@ document.addEventListener('DOMContentLoaded', () => {
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = messageInput.value.trim();
+
         if (text === '') return;
 
-        // Додавання повідомлення користувача до інтерфейсу
-        addMessage(text, 'user');
-
-        // Очищення поля вводу
         messageInput.value = '';
 
+        addMessage(text, 'from-user');
+
+        await sendMessageToServer(text);
+    });
+
+    function addMessage(text, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendMessageToServer(text) {
         try {
-            // Відправка POST-запиту до бекенду
             const response = await fetch('/api/messager', {
                 method: 'POST',
                 headers: {
@@ -25,25 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Помилка: ${response.statusText}`);
+                throw new Error(`Error: ${response.statusText}`);
             }
 
             const data = await response.json();
 
-            // Додавання відповіді сервера до інтерфейсу
-            addMessage(data.reply, 'server');
+            addMessage(data.reply, 'from-server');
         } catch (error) {
             console.error('Error:', error);
-            addMessage('Сталася помилка при відправці повідомлення.', 'server');
+            addMessage('Error happened while sending a message.', 'from-server');
         }
-    });
-
-    // Функція для додавання повідомлень до інтерфейсу
-    function addMessage(text, sender) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', sender);
-        messageElement.textContent = text;
-        messagesDiv.appendChild(messageElement);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 });
