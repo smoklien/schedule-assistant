@@ -1,26 +1,26 @@
-const dotenv = require("dotenv").config();
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const config = require('./config');
+const messengerRouter = require('./routes/messenger');
 
+const PORT = config.PORT;
+const FRONT_URL = config.FRONT_URL;
 
-
-// Middleware для обробки JSON-запитів
+// Middleware for JSON requests
 app.use(express.json());
 
-// Обслуговування статичних файлів з папки 'public'
+// Serve the static files from 'public' directory
 app.use(express.static('public'));
 
-// Імпорт роутера для повідомлень
-const messengerRouter = require('./routes/messenger');
+// Import the messenger router
 app.use('/api/messenger', messengerRouter);
 
-// Базовий роут для перевірки роботи сервера
+// Basic GET request for checking the server's status
 app.get('/', (req, res) => {
   res.send('Server is working.');
 });
 
-// Запуск сервера
+// Start the server
 app.listen(PORT, () => {
-  console.log(`Server is working on: http://localhost:${PORT}`);
+  console.log(`Server is working on: ${FRONT_URL}`);
 });

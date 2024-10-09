@@ -5,15 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const text = messageInput.value.trim();
+        const promt = messageInput.value.trim();
 
-        if (text === '') return;
+        if (promt === '') return;
 
         messageInput.value = '';
 
-        addMessage(text, 'from-user');
+        addMessage(promt, 'from-user');
 
-        await sendMessageToServer(text);
+        await sendMessageToServer(promt);
     });
 
     function addMessage(text, sender) {
@@ -24,14 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    async function sendMessageToServer(text) {
+    async function sendMessageToServer(promt) {
         try {
             const response = await fetch('/api/messenger', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ promt }),
             });
 
             if (!response.ok) {
