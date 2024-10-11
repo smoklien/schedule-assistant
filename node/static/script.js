@@ -3,20 +3,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('messageInput');
     const messagesDiv = document.getElementById('messages');
 
+    // const maxCharacters = 5000;
+
+    // Replace this with dynamic retrieval logic if needed
+    // Could be located in LocalStorage or Cache
+    const userID = 'exampleUserID';
+
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const promt = messageInput.value.trim();
 
-        if (promt === '') return;
+        if (!promt) {
+            return alert('Please enter a message.');
+        }
+
+        // // Should potentially move it to the backend
+        // if (promt.length > maxCharacters) {
+        //     return alert(`Message is too long (max ${maxCharacters} characters).`);
+        // }
 
         messageInput.value = '';
+        addMessageToUI(promt, 'from-user');
 
-        addMessage(promt, 'from-user');
-
-        await sendMessageToServer(promt);
+        try {
+            const reply = await fetchServerResponse(promt, userID);
+            addMessageToUI(reply, 'from-server');
+        } catch (error) {
+            console.error('Error:', error);
+            addMessageToUI('Error sending message.', 'from-server');
+        }
     });
 
-    function addMessage(text, sender) {
+    function addMessageToUI(text, sender) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
         messageElement.textContent = text;
@@ -24,26 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    async function sendMessageToServer(promt) {
-        try {
-            const response = await fetch('/api/messenger', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ promt }),
-            });
+    async function fetchServerResponse(promt, userID) {
+        const response = await fetch('/api/messenger', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ promt, userID }),
+        });
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            addMessage(data.reply, 'from-server');
-        } catch (error) {
-            console.error('Error:', error);
-            addMessage('Error happened while sending a message.', 'from-server');
+        if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
         }
+
+        const data = await response.json();
+        return data.reply;
     }
 });
