@@ -1,5 +1,7 @@
 const Groq = require("groq-sdk");
-const config = require('../config');
+const path = require('path');
+
+const config = require(path.join('..', 'config', 'config'));
 
 const GROQ_API_KEY = config.GROQ_API_KEY;
 const DEFAULT_MODEL = config.DEFAULT_MODEL;

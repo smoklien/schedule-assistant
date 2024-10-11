@@ -1,4 +1,6 @@
-const database = require('../database/users'); 
+const path = require('path');
+
+const database = require(path.join('..', 'database', 'users'));
 
 module.exports = {
     getAllUser: (req, res) => {
@@ -7,11 +9,14 @@ module.exports = {
 
     getUserByID: (req, res) => {
         const { userIndex } = req.params;
-    
-        console.log(req.params);
-        console.log(userIndex);
-    
-        res.json(database[userIndex] || `User #${userIndex} not found`);
+        const user = database[userIndex];
+
+        if (!user) {
+            res.status(404).json(`User #${userIndex} not found`);
+            return;
+        }
+        
+        res.json(database[userIndex]);
     },
 
     createUser: (req, res) => {

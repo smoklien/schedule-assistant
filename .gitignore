@@ -1,7 +1,11 @@
+# VSCode environment settings
 .vscode
 
+# Node JS modules
 node_modules
 
+# JSON files that contains data
 *.json
 
+# Environment settings for the project
 .env
