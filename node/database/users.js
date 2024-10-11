@@ -1,14 +1,14 @@
 module.exports = [
     {
-        userName: "Bob",
-        lastName: "Marley"
+        userID: "C4aSBvwxLm",
+        userName: "Bob Marley"
     },
     {
-        userName: "Jane",
-        lastName: "Doe"
+        userID: "kCpKJk1wib",
+        userName: "Jane Doe"
     },
     {
-        userName: "John",
-        lastName: "Doe"
+        userID: "b6v2eqP6u4",
+        userName: "John Doe"
     }
 ]
