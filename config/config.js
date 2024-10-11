@@ -8,4 +8,5 @@ module.exports = {
   FRONT_URL: process.env.FRONT_URL || `http://localhost:3000/`,
   GROQ_API_KEY: process.env.GROQ_API_KEY,
   DEFAULT_MODEL: process.env.DEFAULT_MODEL,
+  DATABASE_URL: process.env.DATABASE_URL,
 };

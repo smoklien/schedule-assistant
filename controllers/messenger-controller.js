@@ -45,16 +45,16 @@ module.exports = {
         res.json({ message: 'Back-end response.' });
     },
 
-    fetchLLMResponse: async (req, res) => {
+    sendMessage: async (req, res) => {
         const { promt, userID } = req.body;
 
         if (!promt) {
             return res.status(400).json({ error: 'Prompt is empty.' });
         }
 
-        // if (promt.length > 5000) {
-        //   return res.status(400).json({ error: 'Prompt is too long.' });
-        // }
+        if (promt.length > 5000) {
+          return res.status(400).json({ error: 'Prompt is too long. Limit is 5000 characters' });
+        }
 
         if (!userID || !(await verifyUserID(userID))) {
             return res.status(401).json({ error: 'Invalid userID.' });
