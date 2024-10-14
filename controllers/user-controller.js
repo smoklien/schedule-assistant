@@ -1,29 +1,29 @@
 const path = require('path');
 
-const database = require(path.join('..', 'database', 'users'));
+const UserModel = require(path.join('..', 'database', 'user-model'));
+
 
 module.exports = {
-    getAllUser: (req, res) => {
-        res.json(database);
-    },
+	getAllUser: async (req, res) => {
+		const users = await UserModel.find()
 
-    getUserByID: (req, res) => {
-        const { userIndex } = req.params;
-        const user = database[userIndex];
+		res.json(users);
+	},
 
-        if (!user) {
-            res.status(404).json(`User #${userIndex} not found`);
-            return;
-        }
-        
-        res.json(database[userIndex]);
-    },
+	getUserById: async (req, res) => {
+		const { userId } = req.params;
+		const user = await UserModel.findById(userId);
 
-    createUser: (req, res) => {
-        const newUser = req.body;
-    
-        database.push(req.body);
-    
-        res.json(database);
-    }
+		res.json(user);
+	},
+
+	createUser: async (req, res) => {
+		try {
+			const newUser = await UserModel.create(req.body);
+
+			res.status(201).json(newUser);
+		} catch (e) {
+			res.json(e);
+		}
+	}
 }

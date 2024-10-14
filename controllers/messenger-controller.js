@@ -8,64 +8,63 @@ const DEFAULT_MODEL = config.DEFAULT_MODEL;
 
 const groq = new Groq({ apiKey: GROQ_API_KEY });
 
-// async function verifyUserID(userID) {
-//   const db = client.db('yourDatabase');
-//   const collection = db.collection('users'); // Assuming collection is called 'users'
-//   const user = await collection.findOne({ userID });
-//   return !!user; // Return true if user exists
-// }
+const MessengerModel = require(path.join('..', 'database', 'messenger-model'));
+const UserModel = require(path.join('..', 'database', 'user-model'));
 
-async function verifyUserID(userID) {
-  return userID === "exampleUserID";
+async function verifyUserExistence(userId) {
+	const user = await UserModel.findOne({ _id: userId });
+	console.log(user);
+
+	return !!user;
 }
 
 async function getGroqResponse(promt, model = DEFAULT_MODEL) {
-  try {
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "user",
-          content: promt,
-        },
-      ],
-      model: model,
-    });
+	try {
+		const completion = await groq.chat.completions.create({
+			messages: [
+				{
+					role: "user",
+					content: promt,
+				},
+			],
+			model: model,
+		});
 
-    // console.log(completion);
+		// console.log(completion);
 
-    return completion.choices[0]?.message?.content || "No response from Groq";
-  } catch (error) {
-    console.error("Error with Groq API:", error);
-    throw error;
-  }
+		return completion.choices[0]?.message?.content || "No response from Groq";
+	} catch (error) {
+		console.error("Error with Groq API:", error);
+		throw error;
+	}
 }
 
 module.exports = {
-    getBackendResponse: (req, res) => {
-        res.json({ message: 'Back-end response.' });
-    },
+	getBackendResponse: (req, res) => {
+		res.json({ message: 'Back-end response.' });
+	},
 
-    sendMessage: async (req, res) => {
-        const { promt, userID } = req.body;
+	sendMessage: async (req, res) => {
+		const { promt, userId } = req.body;
 
-        if (!promt) {
-            return res.status(400).json({ error: 'Prompt is empty.' });
-        }
+		if (!promt) {
+			return res.status(400).json({ error: 'Prompt is empty.' });
+		}
 
-        if (promt.length > 5000) {
-          return res.status(400).json({ error: 'Prompt is too long. Limit is 5000 characters' });
-        }
+		if (promt.length > 5000) {
+			return res.status(400).json({ error: 'Prompt is too long. Limit is 5000 characters' });
+		}
 
-        if (!userID || !(await verifyUserID(userID))) {
-            return res.status(401).json({ error: 'Invalid userID.' });
-        }
+		if (!userId || !(await verifyUserExistence(userId))) {
+			return res.status(401).json({ error: 'Invalid userId.' });
+		}
 
-        try {
-            const groqReply = await getGroqResponse(promt);
-            res.json({ message: `User message: ${promt}`, reply: groqReply });
-        } catch (error) {
-            console.error("Error in /api/messenger route:", error);
-            res.status(500).json({ error: 'Internal server error' });
-        }
-    },
+		try {
+			const groqReply = await getGroqResponse(promt);
+			res.json({ message: `User message: ${promt}`, reply: groqReply });
+		} catch (error) {
+			console.error("Error in /api/messenger route:", error);
+			res.status(500).json({ error: 'Internal server error' });
+		}
+	},
 }

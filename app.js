@@ -22,13 +22,13 @@ app.use('/api/messenger', messengerRouter);
 app.use('/api/users', userRouter);
 
 mongoose.connect(DATABASE_URL)
-.then(() => {
-  console.log(`Connection to ${DATABASE_URL} is successful`);
-})
-.catch((e) => {
-  console.log(e);
-});
+	.then(() => {
+		console.log(`Connection to ${DATABASE_URL} is successful`);
+	})
+	.catch((e) => {
+		console.log(e);
+	});
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+	console.log(`Server listening on port ${PORT}`);
 });
