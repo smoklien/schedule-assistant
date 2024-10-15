@@ -1,8 +1,9 @@
 const { Schema, model } = require('mongoose');
 
 const messengerSchema = new Schema({
-    text: { type: String, trim: true, required: true },
-    userID: { type: String, trim: true, required: true }
+    userId: { type: String, trim: true, required: true },
+    userMessage: { type: String, trim: true },
+    llmReply: { type: String, trim: true }
 },
     { timestamps: true }
 );

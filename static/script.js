@@ -1,32 +1,25 @@
+const isOnRelease = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
     const messagesDiv = document.getElementById('messages');
 
-    // const maxCharacters = 5000;
-
+    // I am unsure how should look userId logic 
+    //
     // Replace this with dynamic retrieval logic if needed
     // Could be located in LocalStorage or Cache
-    const userID = 'exampleUserID';
+    const userId =  !isOnRelease ? '670d4ae706063cf7e2d579f1' : getUserId() || 'exampleUserID'; 
 
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const promt = messageInput.value.trim();
-
-        if (!promt) {
-            return alert('Please enter a message.');
-        }
-
-        // // Should potentially move it to the backend
-        // if (promt.length > maxCharacters) {
-        //     return alert(`Message is too long (max ${maxCharacters} characters).`);
-        // }
+        const userMessage = messageInput.value.trim();
 
         messageInput.value = '';
-        addMessageToUI(promt, 'from-user');
+        addMessageToUI(userMessage, 'from-user');
 
         try {
-            const reply = await fetchServerResponse(promt, userID);
+            const reply = await fetchServerResponse(userMessage, userId);
             addMessageToUI(reply, 'from-server');
         } catch (error) {
             console.error('Error:', error);
@@ -42,20 +35,23 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    async function fetchServerResponse(promt, userID) {
+    async function fetchServerResponse(userMessage, userId) {
         const response = await fetch('/api/messenger', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ promt, userID }),
+            body: JSON.stringify({ userMessage, userId }),
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
+            console.log(response);
+
+            throw new Error(`Error fetching server response: ${response.statusText}`);
         }
 
         const data = await response.json();
-        return data.reply;
+        console.log(data);
+        return data;
     }
 });

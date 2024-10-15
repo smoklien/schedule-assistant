@@ -17,7 +17,7 @@ const checkIsEmailDuplicate = async (req, res, next) => {
         }
 
         next();
-    } catch (e) {
+    } catch (error) {
         console.error('Error checking email duplication:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
@@ -41,7 +41,7 @@ const verifyUserExistence = async (req, res, next) => {
         }
 
         req.user = user;
-        
+
         next();
     } catch (error) {
         console.error('Error verifying user existence:', error);

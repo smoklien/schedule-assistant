@@ -7,7 +7,7 @@ const userRouter = require(path.join(__dirname, 'routes', 'user-router'));
 const config = require(path.join(__dirname, 'config', 'config'));
 
 const PORT = config.PORT;
-const DATABASE_URL = config.DATABASE_URL;
+const MONGODB_URL = config.MONGODB_URL;
 
 const app = express();
 
@@ -21,12 +21,12 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use('/api/messenger', messengerRouter);
 app.use('/api/users', userRouter);
 
-mongoose.connect(DATABASE_URL)
+mongoose.connect(MONGODB_URL)
 	.then(() => {
-		console.log(`Connection to ${DATABASE_URL} is successful`);
+		console.log(`Connection to ${MONGODB_URL} is successful`);
 	})
-	.catch((e) => {
-		console.log(e);
+	.catch((error) => {
+		console.log(error);
 	});
 
 app.listen(PORT, () => {

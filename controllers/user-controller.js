@@ -11,8 +11,7 @@ module.exports = {
 	},
 
 	getUserById: async (req, res) => {
-		const { userId } = req.params;
-		const user = await UserModel.findById(userId);
+		const user = req.user;
 
 		res.json(user);
 	},
@@ -22,8 +21,8 @@ module.exports = {
 			const newUser = await UserModel.create(req.body);
 
 			res.status(201).json(newUser);
-		} catch (e) {
-			res.json(e);
+		} catch (error) {
+			res.json(error);
 		}
 	}
 }
