@@ -41,7 +41,7 @@ const checkIsMessageEmpty = async (req, res, next) => {
 
 const verifyUserExistence = async (req, res, next) => {
     try {
-        const { userId: userId } = req.body;
+        const userId = req.body.userId || req.query.userId;
 
         if (!isValidObjectId(userId)) {
             return res.status(400).json({

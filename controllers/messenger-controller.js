@@ -10,6 +10,18 @@ module.exports = {
 		res.json(messages);
 	},
 
+	getAllUserMessages: async (req, res) => {
+		const { userId } = req.query
+
+		try {
+			const messages = await MessengerModel.find({ userId }).sort({ createdAt: 1});
+			res.json(messages);
+		} catch (error) {
+			console.error("Error fetching messages:", error);
+			res.status(500).json({ error: 'Internal server error' });
+		}
+	},
+
 	sendMessage: async (req, res) => {
 		try {
 			const { userMessage, userId } = req.body;
