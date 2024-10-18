@@ -1,26 +1,22 @@
-const path = require('path');
 const { Router } = require('express');
+const { messengerMiddleware } = require('../middlewares');
+const { messengerController } = require('../controllers');
 const router = Router();
 
-const messengerController = require(path.join('..', 'controllers', 'messenger-controller'));
-const messengerMiddleware = require(path.join('..', 'middlewares', 'messenger-middleware'));
-
 router.get(
-    '/history', 
-    messengerMiddleware.verifyUserExistence, 
-    messengerController.getAllUserMessages
+    '/history',
+    messengerMiddleware.verifyUserExistence,
+    messengerController.getMessengerDataForUser
 );
 
 router.get(
-    '/', 
-    messengerController.getAllMessages
+    '/',
+    messengerController.getAllMessengerData
 );
 
 router.post(
-    '/', 
-    messengerMiddleware.verifyUserExistence, 
-    messengerMiddleware.checkIsMessageEmpty, 
-    messengerMiddleware.checkIsMessageLarge, 
+    '/',
+    messengerMiddleware.isValidMessage,
     messengerController.sendMessage
 );
 

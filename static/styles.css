@@ -89,3 +89,10 @@ button {
 button:hover {
     background-color: #a95d08;
 }
+
+button#loadMoreButton {
+    border-radius: 4px;
+    align-self: center;
+    margin: 10px;
+    max-width: 120px;
+}

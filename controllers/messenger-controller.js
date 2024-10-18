@@ -1,37 +1,77 @@
 const path = require('path');
+const apiError = require('../api-error/api-error');
 
 const MessengerModel = require(path.join('..', 'database', 'messenger-model'));
-const { getGroqResponse } = require(path.join('..', 'services', 'groqService'));
+
+const { getGroqResponse } = require(path.join('..', 'services', 'groq-service'));
 
 module.exports = {
-	getAllMessages: async (req, res) => {
-		const messages = await MessengerModel.find()
+  getAllMessengerData: async (req, res, next) => {
+    try {
+      // throw new apiError(403, 1, "test error");
 
-		res.json(messages);
-	},
+      // move models to the service
+      const messages = await MessengerModel.find()
+      const messagesCount = await MessengerModel.countDocuments({});
 
-	getAllUserMessages: async (req, res) => {
-		const { userId } = req.query
+      res.json({
+        data: messages,
+        dataCount: messagesCount
+      });
 
-		try {
-			const messages = await MessengerModel.find({ userId }).sort({ createdAt: 1});
-			res.json(messages);
-		} catch (error) {
-			console.error("Error fetching messages:", error);
-			res.status(500).json({ error: 'Internal server error' });
-		}
-	},
+    } catch (e) {
+      next(e);
+    }
+  },
 
-	sendMessage: async (req, res) => {
-		try {
-			const { userMessage, userId } = req.body;
-			const llmReply = await getGroqResponse(userMessage);
-			const newMessageBlock = await MessengerModel.create({ userId: userId, userMessage: userMessage, llmReply: llmReply });
+  getMessengerDataForUser: async (req, res) => {
+    try {
+      // implement pagination
+      const { limit = 10, page = 1, userId } = req.query;
+      const skip = (page - 1) * limit;
 
-			res.json(llmReply);
-		} catch (error) {
-			console.error("Error in /api/messenger route:", error);
-			res.status(500).json({ error: 'Internal server error' });
-		}
-	},
+      const messages = await MessengerModel
+        .find({ userId })
+        .sort({ createdAt: 1 })
+        .limit(limit)
+        .skip(skip);
+
+      const messagesCount = await MessengerModel.countDocuments({ userId });
+
+      res.json({
+        pageNumber: page,
+        perPage: limit,
+        data: messages,
+        dataCount: messagesCount
+      });
+    } catch (error) {
+      res
+        .status(400)
+        .json({
+          message: error.message
+        })
+    }
+  },
+
+  sendMessage: async (req, res) => {
+    try {
+      const { userMessage, userId } = req.body;
+      const llmReply = await getGroqResponse(userMessage);
+
+      const dialog = await MessengerModel
+        .create({
+          userId,
+          userMessage,
+          llmReply
+        });
+
+      res.json(dialog.llmReply);
+    } catch (error) {
+      res
+        .status(400)
+        .json({
+          message: error.message
+        })
+    }
+  },
 }

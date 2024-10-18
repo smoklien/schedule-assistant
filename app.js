@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const { apiRouter } = require('./routes');
 
 const messengerRouter = require(path.join(__dirname, 'routes', 'messenger-router'));
 const userRouter = require(path.join(__dirname, 'routes', 'user-router'));
@@ -17,10 +18,6 @@ app.use(express.json());
 // Serve static files from the 'static' directory
 app.use(express.static(path.join(__dirname, 'static')));
 
-// Set the routes
-app.use('/api/messenger', messengerRouter);
-app.use('/api/users', userRouter);
-
 mongoose.connect(MONGODB_URL)
 	.then(() => {
 		console.log(`Connection to ${MONGODB_URL} is successful`);
@@ -29,6 +26,26 @@ mongoose.connect(MONGODB_URL)
 		console.log(error);
 	});
 
+app.use('/api', apiRouter);
+
+app.use(_mainErrorHandler);
+
+function _mainErrorHandler(err, req, res, next) {
+    console.log(err);
+	
+	res.status(err.status || 500).json({
+        status: err.status || 500,
+        errorStatus: err.errorStatus || 0,
+        message: err.message || '',
+    });
+}
+
 app.listen(PORT, () => {
 	console.log(`Server listening on port ${PORT}`);
 });
+
+// TODO
+// 1. More services
+// 2. Extract model query logic to the external services
+// 3. JOI, Bcrypt
+// 4. Error Handlers
