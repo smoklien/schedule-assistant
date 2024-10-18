@@ -1,6 +1,4 @@
-const path = require('path');
-
-const UserModel = require(path.join('..', 'database', 'user-model'));
+const { userModel } = require("../models");
 
 const isValidObjectId = (userId) => {
   const regex = /^[0-9a-fA-F]{24}$/;
@@ -12,7 +10,7 @@ const isValidObjectId = (userId) => {
 const checkIsEmailDuplicate = async (req, res, next) => {
   try {
     const { email = '' } = req.body;
-    const user = await UserModel.findOne({ email: email.toLowerCase().trim() });
+    const user = await userModel.findOne({ email: email.toLowerCase().trim() });
 
     if (user && user?._id) {
       return res

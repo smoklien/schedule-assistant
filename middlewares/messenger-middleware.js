@@ -1,26 +1,24 @@
-const path = require('path');
 const { messengerValidator } = require('../validators');
 const apiError = require('../api-error/api-error');
-
-const UserModel = require(path.join('..', 'database', 'user-model'));
+const { userModel } = require('../models');
 
 const isValidObjectId = (userId) => {
   const regex = /^[0-9a-fA-F]{24}$/;
   return regex.test(userId);
 }
 
- module.exports = {
+module.exports = {
   isValidMessage: async (req, res, next) => {
     try {
       const { value, error } = messengerValidator.validate(req.body);
-  
+
       if (error) {
         next(new apiError(403, 4032, error.details[0].message));
         return;
       }
-  
+
       req.body = value;
-  
+
       next();
     } catch (e) {
       next(e);
@@ -31,7 +29,7 @@ const isValidObjectId = (userId) => {
     try {
       // smell
       const userId = req.body.userId || req.query.userId;
-  
+
       if (!isValidObjectId(userId)) {
         return res
           .status(400)
@@ -39,10 +37,10 @@ const isValidObjectId = (userId) => {
             message: 'The provided ObjectId is not valid. It must be a 24-character hex string'
           });
       }
-  
+
       // move to services
-      const user = await UserModel.findOne({ _id: userId });
-  
+      const user = await userModel.findOne({ _id: userId });
+
       if (!user && user?._id) {
         return res
           .status(404)
@@ -50,7 +48,7 @@ const isValidObjectId = (userId) => {
             message: `User '${userId}' not found`
           });
       }
-  
+
       next();
     } catch (error) {
       res
@@ -60,4 +58,4 @@ const isValidObjectId = (userId) => {
         })
     }
   }
- }
+}

@@ -1,7 +1,6 @@
 const path = require('path');
 const apiError = require('../api-error/api-error');
-
-const MessengerModel = require(path.join('..', 'database', 'messenger-model'));
+const {messengerModel} = require('../models');
 
 const { getGroqResponse } = require(path.join('..', 'services', 'groq-service'));
 
@@ -11,7 +10,7 @@ module.exports = {
       // throw new apiError(403, 1, "test error");
 
       // move models to the service
-      const messages = await MessengerModel.find()
+      const messages = await messengerModel.find()
       const messagesCount = await MessengerModel.countDocuments({});
 
       res.json({

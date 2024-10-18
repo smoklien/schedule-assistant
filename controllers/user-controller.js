@@ -1,7 +1,4 @@
-const path = require('path');
-
-const UserModel = require(path.join('..', 'database', 'user-model'));
-
+const { userModel } = require("../models");
 
 module.exports = {
   getAllUser: async (req, res) => {
@@ -34,7 +31,7 @@ module.exports = {
 
   createUser: async (req, res) => {
     try {
-      const newUser = await UserModel.create(req.body);
+      const newUser = await userModel.create(req.body);
 
       res.status(201).json(newUser);
     } catch (error) {
