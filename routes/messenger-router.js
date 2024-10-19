@@ -6,18 +6,18 @@ const router = Router();
 router.get(
     '/history',
     messengerMiddleware.verifyUserExistence,
-    messengerController.getMessengerDataForUser
+    messengerController.getUserDialogs,
 );
 
 router.get(
     '/',
-    messengerController.getAllMessengerData
+    messengerController.getAllDialogs,
 );
 
 router.post(
     '/',
     messengerMiddleware.isValidMessage,
-    messengerController.sendMessage
+    messengerController.handleUserMessageAndRespond,
 );
 
 module.exports = router;

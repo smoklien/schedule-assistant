@@ -1,5 +1,6 @@
 const Groq = require("groq-sdk");
 const path = require('path');
+const apiError = require("../api-error/api-error");
 
 const config = require(path.join('..', 'config', 'config'));
 const { GROQ_API_KEY, DEFAULT_MODEL } = config;
@@ -94,24 +95,20 @@ const generatePrompt = (question) => {
   return `По наступним даним ${data} допоможи з наступним питанням: ${question} та Впевнись, що повертаєш тільки текстову відповідь без додаткових уточнень та тексту`;
 };
 
-const getGroqResponse = async (userMessage, model = DEFAULT_MODEL) => {
-  try {
-    const promt = generatePrompt(userMessage);
+module.exports = {
+  getGroqResponse: async (userMessage, model = DEFAULT_MODEL) => {
+    try {
+      const promt = generatePrompt(userMessage);
 
-    const completion = await groq.chat.completions.create({
+      const completion = await groq.chat.completions.create({
         messages: [{ role: "user", content: promt }],
         model: model,
       });
-      
-    return completion.choices[0]?.message?.content || "No response from Groq";
-  } catch (error) {
-    throw new Error
-      .json({
-        error: `Error with Groq API: ${error.message}`
-      });
-  }
-};
 
-module.exports = {
-  getGroqResponse
+      return completion.choices[0]?.message?.content || "No response from Groq";
+    } catch (e) {
+      next(new apiError(403, 4032, e.details[0].message));
+      return;
+    }
+  }
 };

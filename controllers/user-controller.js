@@ -3,7 +3,7 @@ const { userModel } = require("../models");
 module.exports = {
   getAllUser: async (req, res) => {
     try {
-      const users = await UserModel.find()
+      const users = await userModel.find()
 
       res.json(users);
     } catch (error) {

@@ -1,10 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-const { apiRouter } = require('./routes');
 
-const messengerRouter = require(path.join(__dirname, 'routes', 'messenger-router'));
-const userRouter = require(path.join(__dirname, 'routes', 'user-router'));
+const apiRouter = require(path.join(__dirname, 'routes', 'api-router'));
 const config = require(path.join(__dirname, 'config', 'config'));
 
 const PORT = config.PORT;

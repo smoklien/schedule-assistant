@@ -42,7 +42,7 @@ const verifyUserExistence = async (req, res, next) => {
         });
     }
 
-    const user = await UserModel.findOne({ _id: userId });
+    const user = await userModel.findOne({ _id: userId });
 
     if (!user && user?._id) {
       return res
