@@ -9,7 +9,7 @@ module.exports = {
         .lean(),
 
     getUserDialogsWithPagination: (userId, limit, skip) => messengerModel
-        .findOne({ userId })
+        .find({ userId })
         .sort({ createdAt: 1 })
         .limit(limit)
         .skip(skip)

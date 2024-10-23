@@ -5,7 +5,9 @@ const userSchema = new Schema({
     email: { type: String, trim: true, lowercase: true, unique: true, required: true },
     age: { type: Number, default: 18 }
 },
-    { timestamps: true }
+{
+    timestamps: true
+}
 );
 
 module.exports = model('User', userSchema);

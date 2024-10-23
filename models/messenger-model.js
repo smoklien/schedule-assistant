@@ -5,7 +5,9 @@ const messengerSchema = new Schema({
     userMessage: { type: String, trim: true },
     llmReply: { type: String, trim: true }
 },
-    { timestamps: true }
+{ 
+    timestamps: true 
+}
 );
 
 module.exports = model('Messenger', messengerSchema);

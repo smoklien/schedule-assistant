@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -17,21 +19,22 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'static')));
 
 mongoose.connect(MONGODB_URL)
-	.then(() => {
-		console.log(`Connection to ${MONGODB_URL} is successful`);
-	})
-	.catch((error) => {
-		console.log(error);
-	});
+    .then(() => {
+        console.log(`Connection to ${MONGODB_URL} is successful`);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 
 app.use('/api', apiRouter);
 
 app.use(_mainErrorHandler);
 
-function _mainErrorHandler(err, req, res, next) {
+// eslint-disable-next-line no-unused-vars
+function _mainErrorHandler(err, _req, res, _next) {
     console.log(err);
 	
-	res.status(err.status || 500).json({
+    res.status(err.status || 500).json({
         status: err.status || 500,
         errorStatus: err.errorStatus || 0,
         message: err.message || '',
@@ -39,11 +42,5 @@ function _mainErrorHandler(err, req, res, next) {
 }
 
 app.listen(PORT, () => {
-	console.log(`Server listening on port ${PORT}`);
+    console.log(`Server listening on port ${PORT}`);
 });
-
-// TODO
-// 1. More services
-// 2. Extract model query logic to the external services
-// 3. JOI, Bcrypt
-// 4. Error Handlers
