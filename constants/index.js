@@ -1,3 +1,3 @@
 module.exports = {
-    constansEnum: require("./constants-enum")
+    constantsEnum: require("./constants-enum")
 }

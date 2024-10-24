@@ -1,43 +1,38 @@
-// const ApiError = require('../api-error/api-error');
 const { groqService, messengerService } = require('../services');
 
 module.exports = {
-    getAllDialogs: async (req, res, next) => {
+    fetchUserDialogs: async (req, res, next) => {
         try {
-            const dialogs = await messengerService.getDialogs();
-            const dialogsCount = await messengerService.countDialogs();
+            const { userId, limit, page } = req.query;
 
-            res.json({
-                data: dialogs,
-                dataCount: dialogsCount
-            });
-
-        } catch (e) {
-            next(e);
-        }
-    },
-
-    getUserDialogs: async (req, res, next) => {
-        try {
-            // implement pagination
-            const { limit = 10, page = 1, userId } = req.query;
-            const skip = (page - 1) * limit;
-
-            const dialogs = await messengerService.getUserDialogsWithPagination(userId, limit, skip);
+            const dialogs = await messengerService.getUserDialogsWithPagination(userId, limit, page);
             const dialogsCount = await messengerService.countUserDialogs(userId);
 
             res.json({
                 pageNumber: page,
                 perPage: limit,
-                data: dialogs,
-                dataCount: dialogsCount,
+                dialogs,
+                dialogsCount,
             });
+
         } catch (e) {
             next(e);
         }
     },
 
-    handleUserMessageAndRespond: async (req, res, next) => {
+    deleteUserMessages: async (req, res, next) => {
+        try {
+            const { userId } = req.params;
+
+            const messagesDeleted = await messengerService.deleteUserDialogs(userId);
+
+            res.json({ messagesDeleted });
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    processUserMessage: async (req, res, next) => {
         try {
             const { userMessage, userId } = req.body;
 

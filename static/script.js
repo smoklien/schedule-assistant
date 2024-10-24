@@ -1,28 +1,39 @@
-const isOnRelease = false;
+// I am unsure how should look userId logic 
+//
+// Replace this with dynamic retrieval logic if needed
+// Could be located in LocalStorage or Cache
+const userId = '670d4ae706063cf7e2d579f1';
 
-document.addEventListener('DOMContentLoaded', async () => {
+let page = 1;
+const limit = 10;
+
+document.addEventListener('DOMContentLoaded', () => {
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
     const messagesDiv = document.getElementById('messages');
+    const loadMoreButton = document.getElementById('loadMore');
 
-    // I am unsure how should look userId logic 
-    //
-    // Replace this with dynamic retrieval logic if needed
-    // Could be located in LocalStorage or Cache
-    const userId = !isOnRelease ? '670d4ae706063cf7e2d579f1' : 'exampleUserID';
-
-    // const page = 1;
-    const limit = 10;
-
-    const addMessageToUI = (text, sender) => {
+    const appendMessageToUI = (text, sender) => {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', sender);
         messageElement.textContent = text;
+
         messagesDiv.appendChild(messageElement);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    const fetchServerResponse = async (userMessage, userId) => {
+    const prependMessagesToUI = (text, sender) => {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = text;
+
+        const currentScrollHeight = messagesDiv.scrollHeight;
+        messagesDiv.insertBefore(messageElement, loadMoreButton.nextSibling);
+
+        messagesDiv.scrollTop += messagesDiv.scrollHeight - currentScrollHeight;
+    }
+
+    const fetchServerResponse = async (userMessage) => {
         const response = await fetch('/api/messenger', {
             method: 'POST',
             headers: {
@@ -32,40 +43,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (!response.ok) {
-            console.log(response);
-
             throw new Error(`Error fetching server response: ${response.statusText}`);
         }
 
-        const data = await response.json();
-        return data;
+        const result = await response.json();
+        return result;
     }
 
-    const fetchUserHistory = async (userId, page) => {
-        const response = await fetch(`/api/messenger/history?userId=${userId}&limit=${limit}&page=${page}`);
+    const fetchOlderMessages = async (limit, page) => {
+        const response = await fetch(`/api/messenger/?userId=${userId}&limit=${limit}&page=${page}`);
 
         if (!response.ok) {
             throw new Error(`Error loading chat history: ${response.statusText}`);
         }
 
-        const data = await response.json();
-        return data.data;
+        const result = await response.json();
+        return result;
+    }
+
+    const loadChatHistory = async (limit, page) => {
+        try {
+            const data = await fetchOlderMessages(limit, page);
+            const { dialogs } = data;
+
+            dialogs.forEach(message => {
+                prependMessagesToUI(message.llmReply, 'from-server');
+                prependMessagesToUI(message.userMessage, 'from-user');
+            });
+        } catch (e) {
+            console.error('Error loading chat history:', e);
+        }
     }
 
     // Load chat history on page load
-    try {
-        const history = await fetchUserHistory(userId);
-        history.forEach(message => {
-            addMessageToUI(message.userMessage, 'from-user');
-            addMessageToUI(message.llmReply, 'from-server');
-        });
-    } catch (error) {
-        console.error('Error loading chat history:', error);
-    }
+    loadChatHistory(limit, page);
 
     // Form submission logic
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         const userMessage = messageInput.value.trim();
 
         if (!userMessage) {
@@ -73,14 +89,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         messageInput.value = '';
-        addMessageToUI(userMessage, 'from-user');
+
+        appendMessageToUI(userMessage, 'from-user');
 
         try {
-            const reply = await fetchServerResponse(userMessage, userId);
-            addMessageToUI(reply, 'from-server');
+            const reply = await fetchServerResponse(userMessage);
+            appendMessageToUI(reply, 'from-server');
         } catch (error) {
-            console.error('Error:', error);
-            addMessageToUI('Error fetching server response.', 'from-server');
+            console.error('Error fetching server response:', error);
+            appendMessageToUI('Error fetching server response.', 'from-server');
         }
     });
+
+    // Loading older messages logic
+    loadMoreButton.addEventListener('click', () => {
+        page++;
+        loadChatHistory(limit, page);
+    })
 });

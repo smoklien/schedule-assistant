@@ -4,20 +4,21 @@ const { messengerController } = require('../controllers');
 const router = Router();
 
 router.get(
-    '/history',
-    messengerMiddleware.verifyUserExistence,
-    messengerController.getUserDialogs,
-);
-
-router.get(
     '/',
-    messengerController.getAllDialogs,
+    messengerMiddleware.validatePagination,
+    messengerController.fetchUserDialogs,
 );
 
 router.post(
     '/',
-    messengerMiddleware.isValidMessage,
-    messengerController.handleUserMessageAndRespond,
+    messengerMiddleware.validateMessage,
+    messengerController.processUserMessage,
+);
+
+router.post(
+    '/delete/:userId',
+    messengerMiddleware.validateUser,
+    messengerController.deleteUserMessages,
 );
 
 module.exports = router;

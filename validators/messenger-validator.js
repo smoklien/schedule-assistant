@@ -1,22 +1,42 @@
 const Joi = require('joi');
-const { CHARACTER_LIMIT } = require('../constants/constants-enum');
+const { constantsEnum } = require('../constants');
 
-// const isValidObjectId = (userId) => {
-//     const regex = /^[0-9a-fA-F]{24}$/;
-//     return regex.test(userId);
-// }
+const userIdSubSchema = Joi.string()
+    .trim()
+    .required()
+    .pattern(new RegExp(constantsEnum.OBJECT_ID_PATTERN));
 
-const MessengerSchema = Joi.object({
-    userMessage: Joi
-        .string()
-        .trim()
-        .min(3)
-        .max(CHARACTER_LIMIT)
-        .required(),
-    userId: Joi
-        .string()
-        .trim()
-        .required()
-});
+module.exports = {
+    userIdSchema: Joi.object({
+        userId: userIdSubSchema
+    }),
 
-module.exports = MessengerSchema;
+    messageSchema: Joi.object({
+        userMessage: Joi.string()
+            .trim()
+            .min(3)
+            .max(constantsEnum.CHARACTER_LIMIT)
+            .required(),
+
+        userId: userIdSubSchema
+    }),
+
+    paginationSchema: Joi.object({
+        limit: Joi.number()
+            .integer()
+            .positive()
+            .min(1)
+            .max(constantsEnum.MESSAGES_PER_PAGE)
+            .default(10)
+            .required(),
+
+        page: Joi.number()
+            .integer()
+            .positive()
+            .min(1)
+            .default(1)
+            .required(),
+
+        userId: userIdSubSchema
+    })
+}

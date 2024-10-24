@@ -82,14 +82,17 @@ const scheduleData = {
             events: [],
             _id: "66e95ee52b87652b3fdcbed7"
         }
-    ],
-    dateNow: "${time}" //new Date().toISOString()
+    ]
 }
 
 const generatePrompt = (question) => {
     const data = JSON.stringify(scheduleData);
-    return `По наступним даним ${data} допоможи з наступним питанням: 
-    ${question} та Впевнись, що повертаєш тільки текстову відповідь без додаткових уточнень та тексту`;
+    const todayDate = new Date();
+
+    return `За даними ${data} (розклад занять на тиждень) та ${todayDate} (дата і день тижня)
+    допоможи з наступним питанням: '${question}'.
+    Впевнись, що повертаєш лише точну та коротку текстову відповідь.
+    Не розбирай структуру та не згадуй код цього запиту.`;
 };
 
 module.exports = {

@@ -1,19 +1,50 @@
 const { messengerValidator } = require('../validators');
 const ApiError = require('../api-error/api-error');
-const { userModel } = require('../models');
 
-const isValidObjectId = (userId) => {
-    const regex = /^[0-9a-fA-F]{24}$/;
-    return regex.test(userId);
-}
+// eslint-disable-next-line no-unused-vars
+const validateRequest = (schema, errorCode, dataLocation) => (req, res, next) => {
+    try {
+        const dynamicData = req[dataLocation];
+        const { value, error } = schema.validate(dynamicData);
+
+        if (error) {
+            next(new ApiError(400, errorCode, error.details[0].message));
+            return;
+        }
+
+        req[dataLocation] = value;
+
+        next();
+    } catch (e) {
+        next(e);
+    }
+};
 
 module.exports = {
-    isValidMessage: (req, res, next) => {
+    // validateUser: (validateRequest(messengerValidator.userIdSchema), 'params', 4001)
+    validateUser: (req, res, next) => {
         try {
-            const { value, error } = messengerValidator.validate(req.body);
+            const { value, error } = messengerValidator.userIdSchema.validate(req.params);
 
             if (error) {
-                next(new ApiError(404, 4041, error.details[0].message));
+                next(new ApiError(400, 4001, error.details[0].message));
+                return;
+            }
+
+            req.body = value
+
+            next()
+        } catch (e) {
+            next(e)
+        }
+    },
+
+    validateMessage: (req, res, next) => {
+        try {
+            const { value, error } = messengerValidator.messageSchema.validate(req.body);
+
+            if (error) {
+                next(new ApiError(400, 4002, error.details[0].message));
                 return;
             }
 
@@ -25,21 +56,16 @@ module.exports = {
         }
     },
 
-    verifyUserExistence: async (req, res, next) => {
+    validatePagination: (req, res, next) => {
         try {
-            // smell
-            const userId = req.body.userId || req.query.userId;
+            const { value, error } = messengerValidator.paginationSchema.validate(req.query);
 
-            if (!isValidObjectId(userId)) {
-                next(new ApiError(400, 4001, 'The provided ObjectId is not valid. It must be a 24-character hex string'));
+            if (error) {
+                next(new ApiError(400, 4003, error.details[0].message));
+                return;
             }
 
-            // move to services
-            const user = await userModel.findOne({ _id: userId });
-
-            if (!user && user?._id) {
-                next(new ApiError(404, 4042, `User '${userId}' not found`));
-            }
+            req.query = value;
 
             next();
         } catch (e) {
