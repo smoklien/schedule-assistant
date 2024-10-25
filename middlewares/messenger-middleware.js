@@ -21,7 +21,10 @@ const validateRequest = (schema, errorCode, dataLocation) => (req, res, next) =>
 };
 
 module.exports = {
-    // validateUser: (validateRequest(messengerValidator.userIdSchema), 'params', 4001)
+    // validateUser: (validateRequest(messengerValidator.userIdSchema), 'params', 4001),
+    // validateMessage: (validateRequest(messengerValidator.messageSchema), 'body', 4002),
+    // validatePagination: (validateRequest(messengerValidator.paginationSchema), 'query', 4003),
+
     validateUser: (req, res, next) => {
         try {
             const { value, error } = messengerValidator.userIdSchema.validate(req.params);

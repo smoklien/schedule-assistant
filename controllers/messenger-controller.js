@@ -8,7 +8,7 @@ module.exports = {
             const dialogs = await messengerService.getUserDialogsWithPagination(userId, limit, page);
             const dialogsCount = await messengerService.countUserDialogs(userId);
 
-            res.json({
+            res.status(200).json({
                 pageNumber: page,
                 perPage: limit,
                 dialogs,
@@ -20,13 +20,13 @@ module.exports = {
         }
     },
 
-    deleteUserMessages: async (req, res, next) => {
+    deleteUserDialogs: async (req, res, next) => {
         try {
             const { userId } = req.params;
 
-            const messagesDeleted = await messengerService.deleteUserDialogs(userId);
+            const deleteInfo = await messengerService.deleteUserDialogs(userId);
 
-            res.json({ messagesDeleted });
+            res.status(200).json(deleteInfo);
         } catch (e) {
             next(e);
         }
@@ -39,7 +39,7 @@ module.exports = {
             const llmReply = await groqService.getGroqResponse(userMessage);
             const dialog = await messengerService.createDialog({ userId, userMessage, llmReply });
 
-            res.json(dialog.llmReply);
+            res.status(201).json(dialog);
         } catch (e) {
             next(e);
         }

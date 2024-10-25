@@ -11,7 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
     const messagesDiv = document.getElementById('messages');
+
     const loadMoreButton = document.getElementById('loadMore');
+    const deleteHistoryButton = document.getElementById('deleteHistory');
+
 
     const appendMessageToUI = (text, sender) => {
         const messageElement = document.createElement('div');
@@ -61,6 +64,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return result;
     }
 
+    const deleteChatHistory = async () => {
+        const response = await fetch(`/api/messenger/delete/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error deleting chat history: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return result;
+    }
+
     const loadChatHistory = async (limit, page) => {
         try {
             const data = await fetchOlderMessages(limit, page);
@@ -81,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form submission logic
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const userMessage = messageInput.value.trim();
 
         if (!userMessage) {
@@ -93,8 +112,8 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessageToUI(userMessage, 'from-user');
 
         try {
-            const reply = await fetchServerResponse(userMessage);
-            appendMessageToUI(reply, 'from-server');
+            const { llmReply } = await fetchServerResponse(userMessage);
+            appendMessageToUI(llmReply, 'from-server');
         } catch (error) {
             console.error('Error fetching server response:', error);
             appendMessageToUI('Error fetching server response.', 'from-server');
@@ -106,4 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
         page++;
         loadChatHistory(limit, page);
     })
+
+    deleteHistoryButton.addEventListener('click', () => {
+        messagesDiv.innerHTML = '';
+        
+        // eslint-disable-next-line no-unused-vars
+        const data = deleteChatHistory();
+    });
 });

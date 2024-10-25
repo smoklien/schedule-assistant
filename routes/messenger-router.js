@@ -18,7 +18,7 @@ router.post(
 router.post(
     '/delete/:userId',
     messengerMiddleware.validateUser,
-    messengerController.deleteUserMessages,
+    messengerController.deleteUserDialogs,
 );
 
 module.exports = router;
