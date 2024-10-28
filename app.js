@@ -2,13 +2,13 @@
 /* eslint-disable no-undef */
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
+const { join } = require('path');
 
-const apiRouter = require(path.join(__dirname, 'routes', 'api-router'));
-const config = require(path.join(__dirname, 'config', 'config'));
+const apiRouter = require(join(__dirname, 'routes', 'api-router'));
+const config = require(join(__dirname, 'config', 'config'));
 
 const PORT = config.PORT;
-const MONGODB_URL = config.MONGODB_URL;
+const MONGOOSE_URL = config.MONGOOSE_URL;
 
 const app = express();
 
@@ -16,11 +16,11 @@ const app = express();
 app.use(express.json());
 
 // Serve static files from the 'views' directory
-app.use(express.static(path.join(__dirname, 'views')));
+app.use(express.static(join(__dirname, 'views')));
 
-mongoose.connect(MONGODB_URL)
+mongoose.connect(MONGOOSE_URL)
     .then(() => {
-        console.log(`Connection to ${MONGODB_URL} is successful`);
+        console.log(`Connection to ${MONGOOSE_URL} is successful`);
     })
     .catch((error) => {
         console.log(error);

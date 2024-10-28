@@ -9,5 +9,5 @@ module.exports = {
     FRONT_URL: process.env.FRONT_URL || `http://localhost:3000/`,
     GROQ_API_KEY: process.env.GROQ_API_KEY,
     DEFAULT_MODEL: process.env.DEFAULT_MODEL,
-    MONGODB_URL: process.env.MONGODB_URL,
+    MONGOOSE_URL: process.env.MONGOOSE_URL,
 };
