@@ -15,8 +15,8 @@ const app = express();
 // Middleware for JSON requests
 app.use(express.json());
 
-// Serve static files from the 'static' directory
-app.use(express.static(path.join(__dirname, 'static')));
+// Serve static files from the 'views' directory
+app.use(express.static(path.join(__dirname, 'views')));
 
 mongoose.connect(MONGODB_URL)
     .then(() => {
