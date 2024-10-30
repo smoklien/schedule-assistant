@@ -20,9 +20,10 @@ app.use(express.static(join(__dirname, 'views')));
 
 mongoose.connect(MONGOOSE_URL)
     .then(() => {
-        console.log(`Connection to ${MONGOOSE_URL} is successful`);
+        console.log(`Connection to database is successful`);
     })
     .catch((error) => {
+        console.log(MONGOOSE_URL);
         console.log(error);
     });
 
